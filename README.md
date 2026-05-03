@@ -127,7 +127,7 @@
 
 ---
 
-## ⚠️ 예외 코드 정의 (Error Codes)
+### ⚠️ 예외 코드 정의 (Error Codes)
 
 | Error Code | Status | Description |
 | :--- | :--- | :--- |
