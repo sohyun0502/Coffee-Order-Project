@@ -79,7 +79,8 @@
     ```json
     {
       "userId": 1,
-      "menuId": 1
+      "menuId": 1,
+      "quantity": 3
     }
     ```
 *   **Success Response (201 Created)**
@@ -89,7 +90,7 @@
       "userId": 1,
       "menuId": 1,
       "totalPrice": 4500,
-      "orderedAt": "2026-05-03T20:50:00"
+      "createdAt": "2026-05-03T20:50:00"
     }
     ```
 *   **Error Cases**

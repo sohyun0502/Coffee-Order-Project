@@ -3,6 +3,7 @@ package kr.spartaclub.coffeeorderproject.domain.order.entity;
 import jakarta.persistence.*;
 import kr.spartaclub.coffeeorderproject.domain.menu.entity.Menu;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,12 @@ public class OrderItem {
 
     @Column(nullable = false)
     private Long price;
+
+    @Builder
+    public OrderItem(Order order, Menu menu, Integer quantity, Long price) {
+        this.order = order;
+        this.menu = menu;
+        this.quantity = quantity;
+        this.price = price;
+    }
 }

@@ -47,4 +47,21 @@ public class PointService {
 
         return PointResponse.from(point);
     }
+
+    // 포인트 사용
+    @Transactional
+    public void usePoint(Long userId, Long amount) {
+
+        Point point = pointRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("포인트가 없습니다."));
+
+        point.useBalance(amount);
+        pointRepository.save(point);
+
+        pointHistoryRepository.save(PointHistory.builder()
+                .user(point.getUser())
+                .amount(amount)
+                .type(PointStatus.USE)
+                .build());
+    }
 }

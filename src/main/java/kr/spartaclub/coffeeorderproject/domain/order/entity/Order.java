@@ -2,6 +2,7 @@ package kr.spartaclub.coffeeorderproject.domain.order.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -29,4 +30,11 @@ public class Order {
     private OrderStatus status;
 
     private LocalDateTime createdAt;
+
+    @Builder
+    public Order(User user, Long totalPrice, OrderStatus status) {
+        this.user = user;
+        this.totalPrice = totalPrice;
+        this.status = status;
+    }
 }
