@@ -3,6 +3,7 @@ package kr.spartaclub.coffeeorderproject.domain.point.entity;
 import jakarta.persistence.*;
 import kr.spartaclub.coffeeorderproject.domain.order.entity.User;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,4 +31,12 @@ public class PointHistory {
     private PointStatus type;
 
     private LocalDateTime createdAt;
+
+    @Builder
+    public PointHistory(User user, Long amount, PointStatus type) {
+        this.user = user;
+        this.amount = amount;
+        this.type = type;
+        this.createdAt = LocalDateTime.now();
+    }
 }
