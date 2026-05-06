@@ -110,17 +110,14 @@
     [
       {
         "menuId": 1,
-        "name": "아메리카노",
         "orderCount": 150
       },
       {
         "menuId": 3,
-        "name": "돌체라떼",
         "orderCount": 120
       },
       {
         "menuId": 2,
-        "name": "카페라떼",
         "orderCount": 95
       }
     ]
