@@ -31,6 +31,6 @@ public class MenuController {
     @GetMapping("/popular")
     public ResponseEntity<ApiResponse<List<RankingDto>>> findProductRankingTop3InToday() {
         return ResponseEntity.ok(ApiResponse.success(
-                menuService.findMenuRankingTop3InToday()));
+                menuService.findMenuRankingTop3In7Days()));
     }
 }

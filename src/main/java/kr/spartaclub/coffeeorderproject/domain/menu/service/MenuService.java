@@ -12,7 +12,9 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -41,15 +43,24 @@ public class MenuService {
     public void increaseMenuRanking(Long menuId, Integer quantity, LocalDate date) {
         String key = MENU_RANKING_DAILY_KEY + date.toString();
         stringRedisTemplate.opsForZSet().incrementScore(key, String.valueOf(menuId), quantity);
+        stringRedisTemplate.expire(key, Duration.ofDays(8));
     }
 
-    public List<RankingDto> findMenuRankingTop3InToday() {
+    public List<RankingDto> findMenuRankingTop3In7Days() {
         LocalDate currentDate = LocalDate.now();
+        String key = MENU_RANKING_DAILY_KEY + "last-7-days";
+        List<String> keysToUnion = new ArrayList<>();
 
-        String key = MENU_RANKING_DAILY_KEY + currentDate.toString();
+        for (int i = 0; i < 7; i++) {
+            keysToUnion.add(MENU_RANKING_DAILY_KEY + currentDate.minusDays(i).toString());
+        }
+
+        stringRedisTemplate.opsForZSet().unionAndStore(keysToUnion.get(0), keysToUnion.subList(1, 7), key);
 
         Set<ZSetOperations.TypedTuple<String>> result = stringRedisTemplate.opsForZSet()
                 .reverseRangeWithScores(key, 0, 2);
+
+        stringRedisTemplate.expire(key, Duration.ofDays(1));
 
         if (result == null) {
             return Collections.emptyList();
