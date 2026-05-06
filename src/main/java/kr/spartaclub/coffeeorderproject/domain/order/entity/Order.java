@@ -36,5 +36,6 @@ public class Order {
         this.user = user;
         this.totalPrice = totalPrice;
         this.status = status;
+        this.createdAt = LocalDateTime.now();
     }
 }
