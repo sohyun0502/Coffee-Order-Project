@@ -1,6 +1,5 @@
 package kr.spartaclub.coffeeorderproject.domain.order.controller;
 
-import jakarta.validation.Valid;
 import kr.spartaclub.coffeeorderproject.common.response.ApiResponse;
 import kr.spartaclub.coffeeorderproject.domain.order.dto.OrderRequest;
 import kr.spartaclub.coffeeorderproject.domain.order.dto.OrderResponse;

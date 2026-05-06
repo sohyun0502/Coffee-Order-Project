@@ -28,6 +28,10 @@ public class MenuController {
         return ResponseEntity.ok(ApiResponse.success(menuService.getMenus()));
     }
 
+    /**
+     * 4. 인기 메뉴 목록 조회 API
+     * @return
+     */
     @GetMapping("/popular")
     public ResponseEntity<ApiResponse<List<RankingDto>>> findProductRankingTop3InToday() {
         return ResponseEntity.ok(ApiResponse.success(

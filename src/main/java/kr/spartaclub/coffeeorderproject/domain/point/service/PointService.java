@@ -33,7 +33,7 @@ public class PointService {
         User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 없습니다."));
 
-        Point point = pointRepository.findByUserId(request.userId())
+        Point point = pointRepository.findByUserIdWithLock(request.userId())
                 .orElseGet(() -> Point.builder().user(user).balance(0L).build());
 
         point.addBalance(request.amount());
@@ -52,7 +52,7 @@ public class PointService {
     @Transactional
     public void usePoint(Long userId, Long amount) {
 
-        Point point = pointRepository.findByUserId(userId)
+        Point point = pointRepository.findByUserIdWithLock(userId)
                 .orElseThrow(() -> new IllegalArgumentException("포인트가 없습니다."));
 
         point.useBalance(amount);

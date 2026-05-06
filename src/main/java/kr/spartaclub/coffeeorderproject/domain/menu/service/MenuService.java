@@ -14,10 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -40,27 +40,27 @@ public class MenuService {
                 .toList();
     }
 
+    // 메뉴 순위 증가
     public void increaseMenuRanking(Long menuId, Integer quantity, LocalDate date) {
         String key = MENU_RANKING_DAILY_KEY + date.toString();
         stringRedisTemplate.opsForZSet().incrementScore(key, String.valueOf(menuId), quantity);
         stringRedisTemplate.expire(key, Duration.ofDays(8));
     }
 
+    // 최근 7일간 인기있는 메뉴 3개를 조회
     public List<RankingDto> findMenuRankingTop3In7Days() {
         LocalDate currentDate = LocalDate.now();
-        String key = MENU_RANKING_DAILY_KEY + "last-7-days";
-        List<String> keysToUnion = new ArrayList<>();
+        String destKey = MENU_RANKING_DAILY_KEY + "summary:" + currentDate;
 
-        for (int i = 0; i < 7; i++) {
-            keysToUnion.add(MENU_RANKING_DAILY_KEY + currentDate.minusDays(i).toString());
-        }
+        List<String> keysToUnion = IntStream.range(0, 7)
+                .mapToObj(i -> MENU_RANKING_DAILY_KEY + currentDate.minusDays(i).toString())
+                .toList();
 
-        stringRedisTemplate.opsForZSet().unionAndStore(keysToUnion.get(0), keysToUnion.subList(1, 7), key);
+        stringRedisTemplate.opsForZSet().unionAndStore(keysToUnion.get(0), keysToUnion.subList(1, 7), destKey);
+        stringRedisTemplate.expire(destKey, Duration.ofMinutes(10)); // 결과 키는 짧게 유지
 
         Set<ZSetOperations.TypedTuple<String>> result = stringRedisTemplate.opsForZSet()
-                .reverseRangeWithScores(key, 0, 2);
-
-        stringRedisTemplate.expire(key, Duration.ofDays(1));
+                .reverseRangeWithScores(destKey, 0, 2);
 
         if (result == null) {
             return Collections.emptyList();
