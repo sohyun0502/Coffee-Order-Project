@@ -9,6 +9,7 @@ import kr.spartaclub.coffeeorderproject.domain.order.entity.Order;
 import kr.spartaclub.coffeeorderproject.domain.order.entity.OrderItem;
 import kr.spartaclub.coffeeorderproject.domain.order.entity.OrderStatus;
 import kr.spartaclub.coffeeorderproject.domain.order.entity.User;
+import kr.spartaclub.coffeeorderproject.domain.order.producer.OrderProducer;
 import kr.spartaclub.coffeeorderproject.domain.order.repository.OrderItemRepository;
 import kr.spartaclub.coffeeorderproject.domain.order.repository.OrderRepository;
 import kr.spartaclub.coffeeorderproject.domain.order.repository.UserRepository;
@@ -20,6 +21,8 @@ import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -33,6 +36,7 @@ public class OrderService {
     private final UserRepository userRepository;
     private final PointService pointService;
     private final RedissonClient redissonClient;
+    private final OrderProducer  orderProducer;
 
     // 커피 주문/결제하기
     @Transactional
@@ -69,6 +73,20 @@ public class OrderService {
                     .price(menu.getPrice())
                     .build();
             orderItemRepository.save(orderItem);
+
+            String createdAt = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+
+            OrderCompletedEvent event = OrderCompletedEvent.builder()
+                    .orderId(order.getId())
+                    .userId(user.getId())
+                    .menuId(menu.getId())
+                    .quantity(request.quantity())
+                    .price(menu.getPrice())
+                    .totalPrice(order.getTotalPrice())
+                    .createdAt(createdAt)
+                    .build();
+
+            orderProducer.send(event);
 
             return OrderResponse.from(order, orderItem);
 

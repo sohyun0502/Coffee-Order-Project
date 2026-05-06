@@ -2,6 +2,7 @@ package kr.spartaclub.coffeeorderproject.domain.menu.controller;
 
 import kr.spartaclub.coffeeorderproject.common.response.ApiResponse;
 import kr.spartaclub.coffeeorderproject.domain.menu.dto.MenuResponse;
+import kr.spartaclub.coffeeorderproject.domain.menu.dto.RankingDto;
 import kr.spartaclub.coffeeorderproject.domain.menu.service.MenuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,5 +26,11 @@ public class MenuController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<MenuResponse>>> getMenus () {
         return ResponseEntity.ok(ApiResponse.success(menuService.getMenus()));
+    }
+
+    @GetMapping("/popular")
+    public ResponseEntity<ApiResponse<List<RankingDto>>> findProductRankingTop3InToday() {
+        return ResponseEntity.ok(ApiResponse.success(
+                menuService.findMenuRankingTop3InToday()));
     }
 }
