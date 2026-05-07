@@ -142,11 +142,95 @@ services:
     networks:
       - kafka-net
 
+  # --------------------------
+  # Application Instance 1
+  # --------------------------
+  app-1:
+    build: .
+    container_name: app-1
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      # localhost 대신 서비스 이름(db, redis, kafka-1 등) 사용
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/coffee?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=12345678
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:29092,kafka-3:29092
+    depends_on:
+      db:
+        condition: service_healthy # DB가 준비된 후 앱 실행
+      redis:
+        condition: service_started
+    networks:
+      - kafka-net
+
+  # --------------------------
+  # Application Instance 2
+  # --------------------------
+  app-2:
+    build: .
+    container_name: app-2
+    ports:
+      - "8081:8080" # 외부 포트만 8081로 노출
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      # localhost 대신 서비스 이름(db, redis, kafka-1 등) 사용
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/coffee?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=12345678
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka-1:29092,kafka-2:29092,kafka-3:29092
+    depends_on:
+      db:
+        condition: service_healthy # DB가 준비된 후 앱 실행
+      redis:
+        condition: service_started
+    networks:
+      - kafka-net
+
+  # --------------------------
+  # k6 Load Tester
+  # --------------------------
+  k6:
+    image: grafana/k6:latest
+    container_name: k6
+    volumes:
+      - ./scripts:/scripts # 로컬의 scripts 폴더를 컨테이너와 공유
+    networks:
+      - kafka-net
+    # 실행 시 명령어를 수동으로 입력하거나, 아래처럼 자동 실행 설정 가능
+    entrypoint: ["k6", "run", "/scripts/test.js"]
+    depends_on:
+      - app-1
+      - app-2
+  # --------------------------
+  # MySQL Database
+  # --------------------------
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    ports:
+      - "3307:3306"
+    environment:
+      - MYSQL_DATABASE=coffee        # application.yml의 DB명과 일치
+      - MYSQL_ROOT_PASSWORD=12345678 # application.yml의 비밀번호와 일치
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - kafka-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 5s
+      retries: 10
+
 volumes:
   kafka1_data:
   kafka2_data:
   kafka3_data:
   redis_data:
+  mysql_data:
 
 networks:
   kafka-net:
