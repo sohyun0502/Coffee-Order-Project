@@ -2,6 +2,7 @@ package kr.spartaclub.coffeeorderproject.domain.menu.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -25,4 +26,10 @@ public class Menu {
 
     private LocalDateTime createdAt;
 
+    @Builder
+    public Menu(String name, Long price) {
+        this.name = name;
+        this.price = price;
+        this.createdAt = LocalDateTime.now();
+    }
 }

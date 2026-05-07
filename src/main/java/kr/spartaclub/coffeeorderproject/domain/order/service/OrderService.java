@@ -52,8 +52,8 @@ public class OrderService {
         RLock lock = redissonClient.getLock(lockKey);
 
         try {
-            // 5초 대기, 2초간 락 점유
-            if (!lock.tryLock(5, 2, TimeUnit.SECONDS)) {
+            // 0초 대기, 5초간 락 점유
+            if (!lock.tryLock(0, 5, TimeUnit.SECONDS)) {
                 throw new IllegalArgumentException("락 획득 못함");
             }
 

@@ -1,6 +1,5 @@
 package kr.spartaclub.coffeeorderproject.domain.point.dto;
 
-
 import kr.spartaclub.coffeeorderproject.domain.point.entity.Point;
 
 public record PointResponse (
