@@ -57,7 +57,7 @@ public class MenuService {
                 .toList();
 
         stringRedisTemplate.opsForZSet().unionAndStore(keysToUnion.get(0), keysToUnion.subList(1, 7), destKey);
-        stringRedisTemplate.expire(destKey, Duration.ofMinutes(10)); // 결과 키는 짧게 유지
+        stringRedisTemplate.expire(destKey, Duration.ofMinutes(10));
 
         Set<ZSetOperations.TypedTuple<String>> result = stringRedisTemplate.opsForZSet()
                 .reverseRangeWithScores(destKey, 0, 2);

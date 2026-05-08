@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class OrderProducer {
 
-    private final KafkaTemplate<String, OrderCompletedEvent> paymentCompletedEventKafkaTemplate;
+    private final KafkaTemplate<String, OrderCompletedEvent> orderCompletedEventKafkaTemplate;
 
     public void send(OrderCompletedEvent event) {
-        paymentCompletedEventKafkaTemplate.send("order-completed", event);
+        orderCompletedEventKafkaTemplate.send("order-completed", event);
     }
 }
